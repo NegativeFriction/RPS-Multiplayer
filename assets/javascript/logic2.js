@@ -15,11 +15,7 @@ $(document).ready(function() {
   sessionStorage.setItem("Player Number", 0);
   sessionStorage.setItem("wins", 0);
   sessionStorage.setItem("losses", 0);
-  sessionStorage.setItem(
-    "name",
-    "I guess you were too cool to enter a name, huh?"
-  );
-  var chats = [];
+
   var player1Throw = null;
   var player2Throw = null;
   var player1Name;
@@ -197,14 +193,21 @@ $(document).ready(function() {
     var threw = $("#play")
       .val()
       .trim();
-    console.log(threw);
-    database.ref("Player" + sessionStorage.getItem("Player Number")).set({
-      playerNumber: sessionStorage.getItem("Player Number"),
-      throw: threw,
-      wins: sessionStorage.getItem("wins"),
-      losses: sessionStorage.getItem("losses"),
-      name: sessionStorage.getItem("name")
-    });
+    if (threw != "rock" && threw != "paper" && threw != "scissors") {
+      alert(
+        "Please enter rock, paper, or scissors. '" +
+          threw +
+          "' is not an appropriate entry."
+      );
+    } else {
+      database.ref("Player" + sessionStorage.getItem("Player Number")).set({
+        playerNumber: sessionStorage.getItem("Player Number"),
+        throw: threw,
+        wins: sessionStorage.getItem("wins"),
+        losses: sessionStorage.getItem("losses"),
+        name: sessionStorage.getItem("name")
+      });
+    }
   });
 
   function drawStats() {
@@ -229,7 +232,7 @@ $(document).ready(function() {
   });
 
   function updateScroll() {
-    var element = document.getElementById("chatBox");
-    element.scrollTop = element.scrollHeight;
+    var chatBox = document.getElementById("chatBox");
+    chatBox.scrollTop = chatBox.scrollHeight;
   }
 });

@@ -25,6 +25,9 @@ $(document).ready(function() {
   var connectionsRef = database.ref("/connections");
 
   var connectedRef = database.ref(".info/connected");
+
+  var disconnectionRef = database.ref("/disconnections");
+
   database.ref("/chat").set(null);
 
   connectionsRef.on("value", function(snapshot) {
@@ -33,12 +36,34 @@ $(document).ready(function() {
       console.log("Player Number: " + snapshot.numChildren());
       sessionStorage.setItem("Player Number", snapshot.numChildren());
     }
+    disconnectionRef
+      .onDisconnect()
+      .set(sessionStorage.getItem("Player Number"));
   });
 
   connectedRef.on("value", function(snapshot) {
     if (snapshot.val()) {
       var con = connectionsRef.push(true);
       con.onDisconnect().remove();
+    }
+  });
+
+  disconnectionRef.on("value", function(child) {
+    console.log(child.val());
+    if (
+      child.val() < parseInt(sessionStorage.getItem("Player Number")) &&
+      parseInt(sessionStorage.getItem("Player Number")) != 1
+    ) {
+      sessionStorage.setItem(
+        "Player Number",
+        parseInt(sessionStorage.getItem("Player Number")) - 1
+      );
+    } else if (child.val() === null) {
+      console.log("No disconnections");
+    } else {
+      console.log(
+        child.val() + " is less than " + sessionStorage.getItem("Player Number")
+      );
     }
   });
 
@@ -92,6 +117,8 @@ $(document).ready(function() {
     database.ref("/chat").set(null);
     $("#chatBox").empty();
   }
+
+  disconnectionRef.set(null);
 
   function resolve() {
     var win11 = player1Throw === "rock" && player2Throw === "scissors";

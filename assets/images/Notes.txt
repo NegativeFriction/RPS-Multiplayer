@@ -1,0 +1,31 @@
+Firebase will store:
+
+
+- player list
+	- GUIDs
+
+- Connections
+	[GUID: {player:
+		ID: GUID,
+		name:,
+		threw:,
+		turn#:,
+		win#}, {Player2 Obj},{player3 Obj}...
+
+- Player who disonnected
+	- (update on disconnect. Clear once it's iterated through all connections to update lobby positions)
+
+
+psudocode:
+say p1 disconnects
+
+everyone just disconnects at once.
+Then wait for your player ID in seconds
+and then reconnect and get your new player ID as num children in connections
+
+Wipe threw variable for both players while they select RPorS. Time to resolve when it isn't null && I'm P1 or P2
+
+if I threw && P2 didn't throw-> store "P1 throw local"
+If P2 threw && I threw -> Store P2 local
+Go ahead and wipe database
+calculate winner and loser locally

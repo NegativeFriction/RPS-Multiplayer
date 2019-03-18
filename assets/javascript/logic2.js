@@ -22,6 +22,8 @@ $(document).ready(function() {
   var chats = [];
   var player1Throw = null;
   var player2Throw = null;
+  var player1Name;
+  var player2Name;
 
   var connectionsRef = database.ref("/connections");
 
@@ -43,6 +45,7 @@ $(document).ready(function() {
   });
 
   database.ref("/Player1").on("value", function(snapshot) {
+    player1Name = snapshot.child("name").val();
     if (snapshot.child("throw").exists()) {
       player1Throw = snapshot.child("throw").val();
       //   console.log(player1Throw.val());
@@ -55,6 +58,7 @@ $(document).ready(function() {
   });
 
   database.ref("/Player2").on("value", function(snapshot) {
+    player2Name = snapshot.child("name").val();
     if (snapshot.child("throw").exists()) {
       player2Throw = snapshot.child("throw").val();
       console.log(player2Throw);
@@ -86,6 +90,9 @@ $(document).ready(function() {
     database.ref("Player2").set({
       throw: null
     });
+
+    database.ref("/chat").set(null);
+    $("#chatBox").empty();
   }
 
   function resolve() {
@@ -97,7 +104,19 @@ $(document).ready(function() {
     var win22 = player2Throw === "paper" && player1Throw === "rock";
     var win23 = player2Throw === "scissors" && player1Throw === "paper";
 
+    $("#results").empty();
+    $("#results").text(
+      player1Name +
+        " threw " +
+        player1Throw +
+        ". " +
+        player2Name +
+        " threw " +
+        player2Throw
+    );
+    newDiv = $("<div>");
     if (win11 || win12 || win13) {
+      newDiv.text(player1Name + " wins");
       console.log("player 1 wins");
       if (sessionStorage.getItem("Player Number") == 1) {
         sessionStorage.setItem(
@@ -111,6 +130,7 @@ $(document).ready(function() {
         );
       }
     } else if (win21 || win22 || win23) {
+      newDiv.text(player2Name + " wins");
       console.log("Player 2 wins");
       if (sessionStorage.getItem("Player Number") == 2) {
         sessionStorage.setItem(
@@ -124,10 +144,12 @@ $(document).ready(function() {
         );
       }
     } else if (player1Throw === player2Throw) {
+      newDiv.text("It's a tie!");
       console.log("It's a tie");
     } else {
       console.log("This is broken");
     }
+    $("#results").append(newDiv);
     zeroOut();
   }
 
@@ -135,6 +157,7 @@ $(document).ready(function() {
   intervalId = setInterval(mainGame, 1000);
 
   function player1() {
+    $("#chatBox").empty();
     console.log("I am player 1!");
 
     var name = prompt("Please enter your name", "Harry Potter");
@@ -145,6 +168,7 @@ $(document).ready(function() {
   }
 
   function player2() {
+    $("#chatBox").empty();
     console.log("I am player 2!");
     var name = prompt("Please enter your name", "Ron Weasley");
     sessionStorage.setItem("name", name);
@@ -159,9 +183,9 @@ $(document).ready(function() {
       throw: null,
       wins: sessionStorage.getItem("wins"),
       losses: sessionStorage.getItem("losses"),
-      name: sessionStorage.getItem("name"),
-      chats: chats
+      name: sessionStorage.getItem("name")
     });
+    drawStats();
   }
 
   function playRPS() {}
@@ -178,8 +202,25 @@ $(document).ready(function() {
       throw: threw,
       wins: sessionStorage.getItem("wins"),
       losses: sessionStorage.getItem("losses"),
-      name: sessionStorage.getItem("name"),
-      chats: chats
+      name: sessionStorage.getItem("name")
     });
+  });
+
+  function drawStats() {
+    $("#wins").text("Wins: " + sessionStorage.getItem("wins"));
+    $("#losses").text("Losses: " + sessionStorage.getItem("losses"));
+  }
+
+  $("#submit-chat").on("click", function() {
+    var chat = $("#chatText").val();
+    $("#chatText").text("");
+    database.ref("/chat").push(chat);
+  });
+
+  database.ref("/chat").on("child_added", function(snapshot) {
+    var newDiv = $("<div>");
+    newDiv.text(snapshot.val());
+    $("#chatBox").append(newDiv);
+    $("#chatBox").append($("<br>"));
   });
 });

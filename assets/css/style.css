@@ -14,3 +14,20 @@
   float: right;
   width: 30%;
 }
+
+.chatter {
+  display: inline-block;
+  word-break: break-all;
+}
+
+.red {
+  color: red;
+  display: inline-block;
+  padding-right: 0.5rem;
+}
+
+.blue {
+  color: blue;
+  display: inline-block;
+  padding-right: 0.5rem;
+}

@@ -1,5 +1,5 @@
-// $(document).ready(function() {
-document.addEventListener("DOMContentLoaded", function() {
+$(document).ready(function() {
+  // document.addEventListener("DOMContentLoaded", function() {
   console.log("ready");
 
   var config = {
@@ -194,6 +194,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var threw = $("#play")
       .val()
       .trim();
+    $("#play").val("");
     if (threw != "rock" && threw != "paper" && threw != "scissors") {
       alert(
         "Please enter rock, paper, or scissors. '" +
@@ -218,17 +219,28 @@ document.addEventListener("DOMContentLoaded", function() {
 
   $("#submit-chat").on("click", function() {
     var name = sessionStorage.getItem("name");
-    var chat = name + ": " + $("#chatText").val();
-    $("#chatText").text("");
-    database.ref("/chat").push(chat);
+    // var chat = name + ": " + $("#chatText").val();
+    var chat = $("#chatText").val();
+    $("#chatText").val("");
+    database.ref("/chat").push({ name, chat });
   });
 
   database.ref("/chat").on("child_added", function(snapshot) {
-    var newDiv = $("<div>");
+    console.log(snapshot.val().name);
+    console.log(snapshot.val().chat);
 
-    newDiv.text(snapshot.val());
-    $("#chatBox").append(newDiv);
-    // $("#chatBox").append($("<br>"));
+    var nameDiv = $("<div>");
+    var chatDiv = $("<div class='chatter'>");
+    nameDiv.text(snapshot.val().name + ": ");
+    chatDiv.text(snapshot.val().chat);
+    if (snapshot.val().name == sessionStorage.getItem("name")) {
+      nameDiv.attr("class", "blue");
+    } else {
+      nameDiv.attr("class", "red");
+    }
+    $("#chatBox").append(nameDiv);
+    $("#chatBox").append(chatDiv);
+    $("#chatBox").append($("<br>"));
     updateScroll();
   });
 

@@ -1,0 +1,12 @@
+#chatBox {
+  width: 100%;
+  height: 400px;
+  box-sizing: border-box;
+  background-color: blue;
+  overflow-y: auto;
+}
+
+#chatStuff {
+  float: right;
+  width: 30%;
+}

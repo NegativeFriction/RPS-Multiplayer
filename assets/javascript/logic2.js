@@ -28,6 +28,7 @@ $(document).ready(function() {
   var connectionsRef = database.ref("/connections");
 
   var connectedRef = database.ref(".info/connected");
+  database.ref("/chat").set(null);
 
   connectionsRef.on("value", function(snapshot) {
     console.log("# of connections: " + snapshot.numChildren());
@@ -212,15 +213,23 @@ $(document).ready(function() {
   }
 
   $("#submit-chat").on("click", function() {
-    var chat = $("#chatText").val();
+    var name = sessionStorage.getItem("name");
+    var chat = name + ": " + $("#chatText").val();
     $("#chatText").text("");
     database.ref("/chat").push(chat);
   });
 
   database.ref("/chat").on("child_added", function(snapshot) {
     var newDiv = $("<div>");
+
     newDiv.text(snapshot.val());
     $("#chatBox").append(newDiv);
-    $("#chatBox").append($("<br>"));
+    // $("#chatBox").append($("<br>"));
+    updateScroll();
   });
+
+  function updateScroll() {
+    var element = document.getElementById("chatBox");
+    element.scrollTop = element.scrollHeight;
+  }
 });
